@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var app = express()
 
 // Routes
+var article_routes = require('./routes/article');
 
 
 // Middlewares
@@ -19,18 +20,8 @@ app.use(bodyParser.json());
 
 
 
-// Add prefixes to routes
-
-// Routes to test API REST
-app.get('/test', (req, res) => {
-	res.status(200).send({
-		message: 'Welcome to my API REST',
-		course: 'Master JS Frameworks',
-		author: 'Miryam Bathilde'
-	});
-	console.log('Welcome to my API REST');
-});
-
+// Add prefixes to routes / Load routes
+app.use('/api', article_routes);
 
 // Export module (current file)
 module.exports = app;
