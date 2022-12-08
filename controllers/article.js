@@ -12,7 +12,7 @@ var controller = {
 		});
 		console.log('Welcome to my API REST');
 	},
-	
+
 	test: (req, res) => {
 		return res.status(200).send({
 			message: 'I am the action test from the controller of articles'
@@ -23,7 +23,7 @@ var controller = {
 	save: (req, res) => {
 		// 1. get the params from post request
 		var params = req.body;
-		console.log(params)
+		console.log(params);
 
 		// 2. validate the data (validator)
 		try {
@@ -37,23 +37,31 @@ var controller = {
 		}
 
 		if (validate_title && validate_content) {
-			return res.status(200).send({
-				status: 'success',
-				message: 'Validation Success'
-			});
 			// create the object to save
+			var article = new Article();
 
 			// assign values to the object
+			article.title = params.title;
+			article.content = params.content;
+			article.image = null;
 
 			// save the article
-
-			// return a response
-
-			return res.status(200).send({
-				message: 'I am the action save from the controller of articles',
-				article: params
+			article.save((err, articleSaved) => {
+				// return error 
+				if (err || !articleSaved) {
+					return res.status(404).send({
+						status: 'error',
+						message: 'The article has not been saved!'
+					});
+				}
+				// or return a response
+				return res.status(200).send({
+					status: 'success',
+					article: articleSaved
+				});
 			});
-		} else {
+		}
+		else {
 			return res.status(200).send({
 				status: 'error',
 				message: 'The data is not valid'
