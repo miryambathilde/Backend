@@ -253,8 +253,63 @@ var controller = {
 				});
 			});
 		}
-	}
+	},
 	// end upload file
+
+	getImage: (req, res) => {
+		var file = req.params.image;
+		var path_file = './upload/articles/' + file;
+		
+		fs.exists(path_file, (exists) => {
+			if (exists) {
+        return res.sendFile(path.resolve(path_file));
+			} else {
+				return res.status(404).send({
+          status: 'error',
+          message: 'The image doesn\'t exist'
+        });
+			}
+		})
+	},
+
+	search: (req, res) => {
+		// obtain the string to search
+		var search_string = req.params.search;
+    /* if (!search_string || search_string == null) {
+      return res.status(404).send({
+        status: 'error',
+        message: 'The search string is empty'
+      });
+    } */
+    // find or and return the articles
+		Article.find({
+			"$or": [
+			{"title": {"$regex": search_string, "$options": "i"}},
+			{"content": {"$regex": search_string, "$options": "i"}},
+			]
+		})
+			.sort([ [ 'date', 'descending' ] ])
+			.exec((err, articles) => {
+				if (err) { 
+					return res.status(500).send({
+						status: 'error',
+						message: 'Error to get the articles'
+					});
+				}
+				if (!articles || articles.length <= 0) { 
+					return res.status(404).send({
+						status: 'error',
+						message: "There's no articles to show"
+					});
+				}
+
+				return res.status(200).send({
+					status: 'success',
+					articles
+				});
+			
+		})
+	}
 
 };
 
