@@ -70,8 +70,17 @@ var controller = {
 	},
 
 	getArticles: (req, res) => {
+
+		var last = req.params.last;
+
+		var query = Article.find({});
+		if (last || last != undefined) {
+			query.limit(5);
+		}
+
+
 		// find to get de data from database
-		Article.find({}).sort('-_id').exec((err, articles) => {
+		query.sort('-_id').exec((err, articles) => {
 			// return error 
 			if (err) {
 				return res.status(500).send({
