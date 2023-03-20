@@ -176,6 +176,34 @@ var controller = {
 				message: 'Missing data to update'
 			});
 		}
+	},
+
+	deleteArticle: (req, res) => {
+		// get de id from url param
+		var articleId = req.params.id;
+		// find and delete
+		Article.findOneAndDelete({ _id: articleId }, (err, articleDeleted) => {
+			// return error
+			if (err) {
+				return res.status(500).send({
+					status: 'error',
+					message: 'Error to delete the article'
+				});
+			}
+			if (!articleDeleted) {
+				return res.status(404).send({
+					status: 'error',
+					message: 'The article doesn\'t exist'
+				});
+			}
+			// find and delete
+			return res.status(200).send({
+				status: 'success',
+				message: 'Article deleted correctly',
+				article: articleDeleted
+			});
+
+		});
 	}
 };
 
