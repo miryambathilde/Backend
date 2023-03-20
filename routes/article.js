@@ -13,5 +13,6 @@ router.post('/data-course', ArticleController.dataCourse);
 router.post('/save', ArticleController.save);
 router.get('/articles/:last?', ArticleController.getArticles);
 router.get('/article/:id', ArticleController.getArticlebyId);
+router.put('/article/:id', ArticleController.updateArticle);
 
 module.exports = router;

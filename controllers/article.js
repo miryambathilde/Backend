@@ -125,9 +125,58 @@ var controller = {
 			});
 		}
 		);
+	},
+
+	// update article
+	// update the article with the new data from the request body
+	// and save it to the database
+
+	updateArticle: (req, res) => {
+		// 1. get the params from article request
+		var articleId = req.params.id;
+		// 2. Collect the data get from put method
+		var params = req.body;
+
+		// 3. validations data
+		try {
+			var validate_title = !validator.isEmpty(params.title);
+			var validate_content = !validator.isEmpty(params.content);
+		} catch (error) {
+			return res.status(404).send({
+				status: 'error',
+				article: "The article doesn't exist"
+			});
+		}
+
+		if (validate_title && validate_content) {
+			// find and update
+			Article.findOneAndUpdate({ _id: articleId }, params, { new: true }, (err, articleUpdated) => {
+				//  return error
+				if (err) {
+					return res.status(500).send({
+						status: 'error',
+						message: 'Error to update the article'
+					});
+				}
+				if (!articleUpdated) {
+					return res.status(404).send({
+						status: 'error',
+						article: "The article doesn't exist"
+					});
+				}
+				// or return a response with data from database
+				return res.status(200).send({
+					status: 'success',
+					article: articleUpdated
+				});
+			});
+		} else {
+			return res.status(200).send({
+				status: 'error',
+				message: 'Missing data to update'
+			});
+		}
 	}
-
-
 };
 
 module.exports = controller;
