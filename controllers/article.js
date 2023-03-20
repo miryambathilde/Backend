@@ -2,6 +2,8 @@
 
 var validator = require('validator');
 var Article = require('../models/article');
+var fs = require('fs');
+var path = require('path');
 
 var controller = {
 	dataCourse: (req, res) => {
@@ -202,9 +204,58 @@ var controller = {
 				message: 'Article deleted correctly',
 				article: articleDeleted
 			});
-
 		});
+	},
+
+	// method to upload files/images
+	uploadImage: (req, res) => {
+		// configure the connect module multiparty router/article.js
+		// get the file from request
+		var file_name = 'Image not uploaded...';
+
+		console.log(req.files);
+
+		if (!req.files) {
+			return res.status(404).send({
+				status: 'error',
+				message: file_name
+			});
+		}
+		// get the name and extension file
+		var file_path = req.files.file0.path;
+		var file_split = file_path.split('\\');
+		var file_name = file_split[2];
+		var extension_split = file_name.split('\.');
+		var file_extension = extension_split[1];
+
+		// Check the extension, only allows images, and if not and image extension valid deleted the file
+		if (file_extension != 'jpg' && file_extension != 'jpeg' && file_extension != 'png' && file_extension != 'gif') {
+			// delete the file upload
+			fs.unlink(file_path, (err) => {
+					return res.status(200).send({
+						status: 'error',
+						message: 'The extension image is not valid',
+					});
+			});
+		} else {
+			// if all validations are ok, find the article by id and to assign the image and updated the article with the image
+			var articleId = req.params.id;
+			Article.findOneAndUpdate({ _id: articleId }, { image: file_name }, { new: true }, (err, articleUpdated) => {
+				if (err || !articleUpdated) { 
+					return res.status(404).send({
+            status: 'error',
+            message: 'Error to save the image of article'
+          });
+				}
+				return res.status(200).send({
+					status: 'sucess',
+					article: articleUpdated
+				});
+			});
+		}
 	}
+	// end upload file
+
 };
 
 module.exports = controller;
