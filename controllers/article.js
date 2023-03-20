@@ -69,6 +69,31 @@ var controller = {
 		}
 	},
 
+	getArticles: (req, res) => {
+		// find to get de data from database
+		Article.find({}).sort('-_id').exec((err, articles) => {
+			// return error 
+			if (err) {
+				return res.status(500).send({
+					status: 'error',
+					message: 'Error to get the articles'
+				});
+			}
+			if (!articles) {
+				return res.status(404).send({
+					status: 'error',
+					message: 'No articles to show'
+				});
+			}
+			// or return a response with data from database
+			return res.status(200).send({
+				status: 'success',
+				articles: articles
+			});
+		});
+	},
+
+
 };
 
 module.exports = controller;
