@@ -102,6 +102,31 @@ var controller = {
 		});
 	},
 
+	getArticlebyId: (req, res) => {
+		var articleId = req.params.id;
+		if (!articleId || articleId == null) {
+			return res.status(404).send({
+				status: 'error',
+				article: "The article doesn't exist"
+			});
+		}
+		Article.findById(articleId, (err, article) => {
+			// return error
+			if (err || !article) {
+				return res.status(404).send({
+					status: 'error',
+					message: 'The article doesn\'t exist'
+				});
+			}
+			// or return a response with data from database
+			return res.status(200).send({
+				status: 'success',
+				article: article
+			});
+		}
+		);
+	}
+
 
 };
 
